@@ -1,7 +1,9 @@
 const axios = require('axios').default;
 axios.defaults.baseURL = 'https://pixabay.com/api/';
+const spinner = document.querySelector('div.spinner');
 
 async function getSearch(request, page, per_page) {
+  spinner.style.display = 'block';
   try {
     return await axios.get('', {
       params: {
@@ -16,6 +18,8 @@ async function getSearch(request, page, per_page) {
     });
   } catch (error) {
     console.error(error);
+  } finally {
+    spinner.style.display = 'none';
   }
 }
 

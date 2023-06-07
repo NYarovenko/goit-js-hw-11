@@ -1,5 +1,11 @@
 import { getSearch } from './helpers/request';
 import Notiflix from 'notiflix';
+import simpleLightbox from 'simplelightbox';
+
+// Описаний в документації
+import SimpleLightbox from 'simplelightbox';
+// Додатковий імпорт стилів
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.querySelector('form.search-form');
 const divGallery = document.querySelector('div.gallery');
@@ -8,6 +14,10 @@ const PER_PAGE = 40; //кількість карток за один запит
 let total;
 let page = 1;
 let search = '';
+
+const lightbox = new SimpleLightbox('.gallery a', {
+  /* options */
+});
 
 const observer = new IntersectionObserver(
   entries => {
@@ -68,8 +78,9 @@ function markingGallery(data) {
       comments,
       downloads,
     }) =>
-      `<div class="photo-card">
-        <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+      `<a href="${largeImageURL}">
+      <div class="photo-card">
+        <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
         <div class="info">
           <p class="info-item">
             <b>Likes</b>
@@ -88,8 +99,10 @@ function markingGallery(data) {
             <span>${downloads}</span>
           </p>
         </div>
-      </div>`
+      </div>
+      </a>`
   );
-  // divGallery.innerHTML = markup.join('');
+
   divGallery.insertAdjacentHTML('beforeend', markup.join(''));
+  lightbox.refresh();
 }
