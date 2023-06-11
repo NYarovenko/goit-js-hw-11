@@ -10,7 +10,9 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 const form = document.querySelector('form.search-form');
 const divGallery = document.querySelector('div.gallery');
 const guard = document.querySelector('div.guard');
+const spinner = document.querySelector('div.spinner');
 const PER_PAGE = 40; //кількість карток за один запит
+let data_search;
 let total;
 let page = 1;
 let search = '';
@@ -57,10 +59,20 @@ function onSubmit(evnt) {
 
 async function request() {
   observer.unobserve(guard);
-  const { data } = await getSearch(search, page, PER_PAGE);
+  spinner.style.display = 'block';
+  try {
+    const { data } = await getSearch(search, page, PER_PAGE);
+    data_search = data;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    spinner.style.display = 'none';
+  }
+
+  // const { data } = await getSearch(search, page, PER_PAGE);
   await observer.observe(guard);
-  total = data.totalHits;
-  if (!data.total) {
+  total = data_search.totalHits;
+  if (!total) {
     Notiflix.Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
     );
@@ -72,7 +84,7 @@ async function request() {
     observer.observe(guard);
   }
 
-  markingGallery(data);
+  markingGallery(data_search);
 }
 
 // розмітка галереї
