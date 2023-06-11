@@ -23,12 +23,20 @@ const observer = new IntersectionObserver(
   entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
+        if (total - PER_PAGE * page < 0) {
+          Notiflix.Notify.warning(
+            "We're sorry, but you've reached the end of search results."
+          );
+          observer.unobserve(guard);
+          return;
+        }
+
         page += 1;
         request(search, page);
       }
     });
   },
-  { rootMargin: '100px' }
+  { rootMargin: '200px' }
 );
 
 form.addEventListener('submit', onSubmit);
@@ -48,8 +56,10 @@ function onSubmit(evnt) {
 }
 
 async function request() {
+  observer.unobserve(guard);
   const { data } = await getSearch(search, page, PER_PAGE);
-  total = data.total;
+  await observer.observe(guard);
+  total = data.totalHits;
   if (!data.total) {
     Notiflix.Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
@@ -63,7 +73,6 @@ async function request() {
   }
 
   markingGallery(data);
-  if (total - PER_PAGE * page < 0) observer.unobserve(guard);
 }
 
 // розмітка галереї
