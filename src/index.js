@@ -76,6 +76,7 @@ async function request() {
     Notiflix.Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
     );
+    observer.unobserve(guard);
     return;
   }
 
